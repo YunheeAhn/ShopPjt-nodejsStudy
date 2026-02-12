@@ -12,6 +12,9 @@ const bodyParser = require("body-parser");
 //*** cors 세팅 ***//
 const cors = require("cors");
 
+//*** 라우터 불러오기 ***//
+const indexRouter = require("./routes/index");
+
 //*** express 앱 생성 ***//
 const app = express();
 
@@ -24,6 +27,9 @@ app.use(cors());
 //*** body-parser 미들웨어 설정 ***//
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+//*** 라우터 설정 ***//
+app.use("/api", indexRouter); // /api/tasks 로 라우팅됨
 
 //*** mongoose 연결 ***//
 const mongoURI = "mongodb://localhost:27017/shopping-pjt";
