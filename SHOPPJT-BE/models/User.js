@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema(
     level: {
       // 유저 권한 관리
       // customer, admin
+      type: String,
       required: true,
       default: "customer", // 기본은 customer
     },
