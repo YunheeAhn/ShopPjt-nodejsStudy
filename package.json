@@ -1,0 +1,8 @@
+{
+  "name": "shoppjt-root",
+  "private": true,
+  "scripts": {
+    "start": "cd SHOPPJT-BE && npm start",
+    "heroku-postbuild": "cd SHOPPJT-BE && npm install --omit=dev"
+  }
+}

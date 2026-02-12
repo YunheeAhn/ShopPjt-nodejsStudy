@@ -1,0 +1,1 @@
+web: cd SHOPPJT-BE && npm install && npm start
