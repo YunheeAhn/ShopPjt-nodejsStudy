@@ -1,7 +1,7 @@
 import React from "react";
 import PrivateRouter from "./PrivateRouter";
-import SignUpPage from "../pages/SignupPage/SignUpPage";
 import { Route, Routes } from "react-router-dom";
+import SignUpPage from "../pages/SignUpPage/SignUpPage";
 
 const AppRouter = () => {
   return (
