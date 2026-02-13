@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+
 // MUI
 import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
@@ -41,8 +43,9 @@ const LoginPage = () => {
     dispatch(loginWithEmail({ email, password }));
   };
 
-  const handleGoogleLogin = async (googleData) => {
+  const handleGoogleLogin = async (credentialResponse) => {
     //구글 로그인 하기
+    console.log("google credentialResponse:", credentialResponse);
   };
 
   return (

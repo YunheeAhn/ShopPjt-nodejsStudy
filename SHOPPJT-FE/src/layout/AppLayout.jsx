@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 // MUI
+import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 
 // Components
@@ -31,42 +32,69 @@ const AppLayout = ({ children }) => {
   }, [user, dispatch]);
 
   return (
-    <Box>
+    <Root>
       <ToastMessage />
 
       {isAdminRoute ? (
-        <Box sx={{ display: "flex" }}>
-          {/* Left */}
-          <Box
-            sx={{
-              width: { xs: "100%", md: 260 }, // md 이상 사이드바 폭 고정
-              flexShrink: 0,
-              borderRight: { xs: "none", md: (t) => `1px solid ${t.palette.divider}` },
-              bgcolor: "background.paper",
-            }}
-          >
+        <AdminLayout>
+          <AdminSidebarWrap>
             <Sidebar />
-          </Box>
+          </AdminSidebarWrap>
 
-          {/* Right */}
-          <Box
-            sx={{
-              flex: 1,
-              minWidth: 0,
-              p: { xs: 2, md: 3 },
-            }}
-          >
-            {children}
-          </Box>
-        </Box>
+          <AdminContent>{children}</AdminContent>
+        </AdminLayout>
       ) : (
         <>
           <Navbar user={user} />
-          <Box sx={{ p: { xs: 2, md: 3 } }}>{children}</Box>
+          <DefaultContent>{children}</DefaultContent>
         </>
       )}
-    </Box>
+    </Root>
   );
 };
 
 export default AppLayout;
+
+const SIDEBAR_WIDTH = 260;
+
+// 스타일드 컴포넌트
+const Root = styled(Box)(({ theme }) => ({
+  minHeight: "100vh",
+  backgroundColor: theme.palette.background.default,
+}));
+
+const AdminLayout = styled(Box)(() => ({
+  display: "flex",
+  minHeight: "100vh",
+}));
+
+const AdminSidebarWrap = styled(Box)(({ theme }) => ({
+  width: "100%",
+  height: "100vh",
+  flexShrink: 0,
+  backgroundColor: theme.palette.background.paper,
+
+  // md 이상에서만 고정 폭 + 우측 보더
+  [theme.breakpoints.up("md")]: {
+    width: SIDEBAR_WIDTH,
+    borderRight: `1px solid ${theme.palette.divider}`,
+  },
+}));
+
+const AdminContent = styled(Box)(({ theme }) => ({
+  flex: 1,
+  minWidth: 0,
+  padding: theme.spacing(2),
+
+  [theme.breakpoints.up("md")]: {
+    padding: theme.spacing(3),
+  },
+}));
+
+const DefaultContent = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(2),
+
+  [theme.breakpoints.up("md")]: {
+    padding: theme.spacing(3),
+  },
+}));
