@@ -32,8 +32,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/api", indexRouter); // /api/tasks 로 라우팅됨
 
 //*** mongoose 연결 ***//
-const mongoURI = "mongodb://localhost:27017/shopping-pjt";
-// const mongoURI = MONGODB_URI_PROD;
+// const mongoURI = "mongodb://localhost:27017/shopping-pjt";
+const mongoURI = MONGODB_URI_PROD;
 
 mongoose
   .connect(mongoURI)
