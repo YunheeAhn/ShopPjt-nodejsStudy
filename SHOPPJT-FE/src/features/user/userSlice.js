@@ -4,9 +4,23 @@ import { showToastMessage } from "../common/uiSlice";
 import api from "../../utils/api";
 import { initialCart } from "../cart/cartSlice";
 
+// 이메일로 로그인 로직
 export const loginWithEmail = createAsyncThunk(
   "user/loginWithEmail",
-  async ({ email, password }, { rejectWithValue }) => {},
+  async ({ email, password }, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/auth/login", { email, password });
+      // 로그인에 성공한 경우
+      // 성공 하면 메인 페이지로 이동 (로그인페이지에서)
+      console.log("LOGIN RESPONSE:", response.data);
+      return response.data;
+    } catch (error) {
+      // 로그인에 실패한 경우
+      // 에러 값 reducer에 저장
+      const msg = error?.message || error?.error || "로그인에 실패 했습니다";
+      return rejectWithValue(msg);
+    }
+  },
 );
 
 export const loginWithGoogle = createAsyncThunk(
@@ -80,6 +94,23 @@ const userSlice = createSlice({
         // 회원가입 실패
         state.loading = false;
         state.registrationError = action.payload;
+      })
+      .addCase(loginWithEmail.pending, (state) => {
+        // 이메일로 로그인 성공 실패 여부 기다리는 중
+        state.loading = true;
+        state.loginError = null;
+      })
+      .addCase(loginWithEmail.fulfilled, (state, action) => {
+        // 이메일로 로그인 성공
+        state.loading = false;
+        // 이메일로 로그인 유저 값 저장
+        state.user = action.payload.loginUser;
+        state.loginError = null;
+      })
+      .addCase(loginWithEmail.rejected, (state, action) => {
+        // 이메일로 로그인 실패
+        state.loading = false;
+        state.loginError = action.payload;
       });
   },
 });

@@ -14,6 +14,7 @@ import Alert from "@mui/material/Alert";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
+import { styled } from "@mui/material/styles";
 
 import { registerUser } from "../../features/user/userSlice";
 
@@ -70,26 +71,13 @@ const SignUpPage = () => {
   };
 
   return (
-    <Container maxWidth="sm" className="register-area" sx={{ py: 6 }}>
-      <Paper
-        variant="outlined"
-        sx={{
-          p: { xs: 3, md: 4 },
-          borderRadius: 3,
-          bgcolor: "background.paper",
-        }}
-      >
-        <Typography variant="h2" sx={{ fontWeight: 800, mb: 2 }}>
-          회원가입
-        </Typography>
+    <PageContainer maxWidth="sm">
+      <CardPaper variant="outlined">
+        <Title variant="h2">회원가입</Title>
 
-        {registrationError && (
-          <Alert severity="error" className="error-message" sx={{ mb: 2 }}>
-            {registrationError}
-          </Alert>
-        )}
+        {registrationError && <ErrorAlert severity="error">{registrationError}</ErrorAlert>}
 
-        <Box component="form" onSubmit={register}>
+        <FormBox component="form" onSubmit={register}>
           <TextField
             fullWidth
             margin="normal"
@@ -157,31 +145,66 @@ const SignUpPage = () => {
           />
 
           {policyError && (
-            <Alert severity="warning" sx={{ mt: 1 }}>
-              이용약관 동의가 필요합니다.
-            </Alert>
+            <PolicyWarnAlert severity="warning">이용약관 동의가 필요합니다.</PolicyWarnAlert>
           )}
 
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            disabled={loading}
-            sx={{ mt: 2, py: 1.2 }}
-          >
+          <SubmitButton type="submit" variant="contained" fullWidth disabled={loading}>
             {loading ? (
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <ButtonLoadingContent>
                 <CircularProgress size={18} />
                 진행 중...
-              </Box>
+              </ButtonLoadingContent>
             ) : (
               "회원가입"
             )}
-          </Button>
-        </Box>
-      </Paper>
-    </Container>
+          </SubmitButton>
+        </FormBox>
+      </CardPaper>
+    </PageContainer>
   );
 };
 
 export default SignUpPage;
+
+// 스타일드 컴포넌트
+const PageContainer = styled(Container)(({ theme }) => ({
+  paddingTop: theme.spacing(6),
+  paddingBottom: theme.spacing(6),
+}));
+
+const CardPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  borderRadius: theme.spacing(3),
+  backgroundColor: theme.palette.background.paper,
+
+  [theme.breakpoints.down("md")]: {
+    padding: theme.spacing(3),
+  },
+}));
+
+const Title = styled(Typography)(({ theme }) => ({
+  fontWeight: 800,
+  marginBottom: theme.spacing(2),
+}));
+
+const ErrorAlert = styled(Alert)(({ theme }) => ({
+  marginBottom: theme.spacing(2),
+}));
+
+const FormBox = styled(Box)(() => ({}));
+
+const PolicyWarnAlert = styled(Alert)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+}));
+
+const SubmitButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  paddingTop: theme.spacing(1.2),
+  paddingBottom: theme.spacing(1.2),
+}));
+
+const ButtonLoadingContent = styled(Box)(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(1),
+}));
