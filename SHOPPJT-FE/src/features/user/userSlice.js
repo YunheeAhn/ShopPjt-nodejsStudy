@@ -28,7 +28,10 @@ export const loginWithGoogle = createAsyncThunk(
   async (token, { rejectWithValue }) => {},
 );
 
-export const logout = () => (dispatch) => {};
+export const logout = () => (dispatch) => {
+  sessionStorage.removeItem("token");
+  dispatch(userSlice.actions.logoutSuccess());
+};
 
 // 유저 회원가입
 export const registerUser = createAsyncThunk(
@@ -66,6 +69,7 @@ const userSlice = createSlice({
   name: "user",
   initialState: {
     user: null,
+    token: sessionStorage.getItem("token") || null,
     loading: false,
     loginError: null,
     registrationError: null,
@@ -75,6 +79,11 @@ const userSlice = createSlice({
     clearErrors: (state) => {
       state.loginError = null;
       state.registrationError = null;
+    },
+    logoutSuccess: (state) => {
+      state.user = null;
+      state.token = null;
+      state.loginError = null;
     },
   },
   extraReducers: (builder) => {
@@ -106,6 +115,10 @@ const userSlice = createSlice({
         // 이메일로 로그인 유저 값 저장
         state.user = action.payload.loginUser;
         state.loginError = null;
+
+        // 세션 스토리지 토큰 저장
+        state.token = action.payload.token;
+        sessionStorage.setItem("token", action.payload.token);
       })
       .addCase(loginWithEmail.rejected, (state, action) => {
         // 이메일로 로그인 실패
