@@ -13,6 +13,7 @@ import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { registerUser } from "../../features/user/userSlice";
 
@@ -20,7 +21,7 @@ const SignUpPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { registrationError } = useSelector((state) => state.user);
+  const { registrationError, loading } = useSelector((state) => state.user);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -99,6 +100,7 @@ const SignUpPage = () => {
             onChange={handleChange}
             required
             autoComplete="email"
+            disabled={loading}
           />
 
           <TextField
@@ -111,6 +113,7 @@ const SignUpPage = () => {
             onChange={handleChange}
             required
             autoComplete="name"
+            disabled={loading}
           />
 
           <TextField
@@ -123,6 +126,7 @@ const SignUpPage = () => {
             onChange={handleChange}
             required
             autoComplete="new-password"
+            disabled={loading}
           />
 
           <TextField
@@ -137,10 +141,18 @@ const SignUpPage = () => {
             autoComplete="new-password"
             error={Boolean(passwordError)}
             helperText={passwordError || " "}
+            disabled={loading}
           />
 
           <FormControlLabel
-            control={<Checkbox id="policy" checked={formData.policy} onChange={handleChange} />}
+            control={
+              <Checkbox
+                id="policy"
+                checked={formData.policy}
+                onChange={handleChange}
+                disabled={loading}
+              />
+            }
             label="이용약관에 동의합니다"
           />
 
@@ -150,8 +162,21 @@ const SignUpPage = () => {
             </Alert>
           )}
 
-          <Button type="submit" variant="contained" fullWidth sx={{ mt: 2, py: 1.2 }}>
-            회원가입
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            disabled={loading}
+            sx={{ mt: 2, py: 1.2 }}
+          >
+            {loading ? (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <CircularProgress size={18} />
+                진행 중...
+              </Box>
+            ) : (
+              "회원가입"
+            )}
           </Button>
         </Box>
       </Paper>
