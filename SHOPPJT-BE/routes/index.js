@@ -6,9 +6,11 @@ const router = express.Router();
 
 const userApi = require("./user.api");
 const authApi = require("./auth.api");
+const productApi = require("./product.api");
 
 //*** 라우터 경로 설정 ***//
 router.use("/user", userApi);
 router.use("/auth", authApi);
+router.use("/product", productApi);
 
 module.exports = router;

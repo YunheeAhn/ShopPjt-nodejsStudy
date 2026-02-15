@@ -1,4 +1,4 @@
-// login 기능 정의
+// auth 기능 정의
 
 // model 불러오기
 const User = require("../models/User");
@@ -15,6 +15,7 @@ const bcrypt = require("bcryptjs");
 
 const authController = {};
 
+// 이메일로 로그인
 authController.loginWithEmail = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -54,6 +55,35 @@ authController.authenticate = async (req, res, next) => {
       req.userId = payload._id;
       next();
     });
+  } catch (error) {
+    res.status(400).json({ status: "fail", error: error.message });
+  }
+};
+
+// user의 level = admin 확인
+authController.checkAdminPermission = async (req, res, next) => {
+  try {
+    // token 이용해서 유저 확인하기(authController.authenticate next로 받음)
+    const { userId } = req;
+
+    if (!userId) {
+      // userId를 못 가져온 경우
+      return res.status(400).json({ status: "fail", error: "인증 정보가 없습니다" });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      // user 정보를 못 찾은 경우
+      return res.status(400).json({ status: "fail", error: "유효하지 않은 사용자입니다" });
+    }
+
+    if (user.level !== "admin") {
+      // user.level 이 admin이 아닌 경우
+      throw new Error("접근 권한이 없습니다.");
+    }
+
+    next();
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }
