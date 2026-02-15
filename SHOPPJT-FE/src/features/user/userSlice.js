@@ -12,7 +12,10 @@ export const loginWithEmail = createAsyncThunk(
       const response = await api.post("/auth/login", { email, password });
       // 로그인에 성공한 경우
       // 성공 하면 메인 페이지로 이동 (로그인페이지에서)
-      console.log("LOGIN RESPONSE:", response.data);
+
+      // 세션스토리지 토큰 저장
+      sessionStorage.setItem("token", response.data.token);
+
       return response.data;
     } catch (error) {
       // 로그인에 실패한 경우
@@ -60,9 +63,18 @@ export const registerUser = createAsyncThunk(
   },
 );
 
+// 유저 토큰 값으로 로그인하기
 export const loginWithToken = createAsyncThunk(
   "user/loginWithToken",
-  async (_, { rejectWithValue }) => {},
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/user/me");
+      return response.data;
+    } catch (error) {
+      const msg = error?.message || error?.error || "유효하지 않은 토큰 입니다";
+      return rejectWithValue(msg);
+    }
+  },
 );
 
 const userSlice = createSlice({
@@ -87,8 +99,8 @@ const userSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    // 회원가입 케이스
     builder
+      //***** 회원가입 *****//
       .addCase(registerUser.pending, (state) => {
         // 회원가입 성공 실패 여부 기다리는 중
         state.loading = true;
@@ -104,6 +116,7 @@ const userSlice = createSlice({
         state.loading = false;
         state.registrationError = action.payload;
       })
+      //***** 이메일 로그인 *****//
       .addCase(loginWithEmail.pending, (state) => {
         // 이메일로 로그인 성공 실패 여부 기다리는 중
         state.loading = true;
@@ -114,16 +127,21 @@ const userSlice = createSlice({
         state.loading = false;
         // 이메일로 로그인 유저 값 저장
         state.user = action.payload.loginUser;
+        state.token = action.payload.token;
         state.loginError = null;
 
         // 세션 스토리지 토큰 저장
         state.token = action.payload.token;
-        sessionStorage.setItem("token", action.payload.token);
       })
       .addCase(loginWithEmail.rejected, (state, action) => {
         // 이메일로 로그인 실패
         state.loading = false;
         state.loginError = action.payload;
+      })
+      //***** 토큰 로그인 *****//
+      .addCase(loginWithToken.fulfilled, (state, action) => {
+        // 토큰 값 있으면 로그인 유지
+        state.user = action.payload.user;
       });
   },
 });
