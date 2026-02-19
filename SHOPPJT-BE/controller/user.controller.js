@@ -53,12 +53,15 @@ userController.getUser = async (req, res) => {
   try {
     const { userId } = req;
     const user = await User.findById(userId);
+
     if (user) {
-      res.status(200).json({ status: "success", user });
+      return res.status(200).json({ status: "success", user });
     }
+
     throw new Error("토큰이 유효하지 않거나, 없습니다");
   } catch (error) {
-    res.status(400).json({ status: "fail", error: error.message });
+    return res.status(400).json({ status: "fail", error: error.message });
   }
 };
+
 module.exports = userController;
