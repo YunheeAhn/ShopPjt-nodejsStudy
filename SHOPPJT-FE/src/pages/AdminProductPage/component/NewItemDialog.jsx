@@ -73,6 +73,12 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
     }
   }, [showDialog, mode, selectedProduct, error, success, dispatch]);
 
+  useEffect(() => {
+    if (stock.length > 0 && stockError) {
+      setStockError(false);
+    }
+  }, [stock, stockError]);
+
   const handleClose = () => {
     // 스타일만 요청이라 기능은 비워둠(원본 의도 유지)
     setShowDialog(false);
