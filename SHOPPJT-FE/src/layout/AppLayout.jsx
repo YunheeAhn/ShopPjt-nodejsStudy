@@ -86,8 +86,15 @@ const AdminContent = styled(Box)(({ theme }) => ({
   minWidth: 0,
   padding: theme.spacing(2),
 
+  position: "absolute",
+  top: "80px",
+  right: 0,
+  left: 0,
+  bottom: 0,
+
   [theme.breakpoints.up("md")]: {
     padding: theme.spacing(3),
+    position: "unset",
   },
 }));
 

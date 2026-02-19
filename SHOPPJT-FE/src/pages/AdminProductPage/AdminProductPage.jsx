@@ -139,7 +139,7 @@ const ActionRow = styled(Box)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-const AddButton = styled(Button)(({ theme }) => ({
+const AddButton = styled(Button)(() => ({
   borderRadius: 12,
   fontWeight: 700,
 }));
