@@ -1,11 +1,13 @@
 import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const PrivateRouter = ({ permissionLevel }) => {
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : null;
+  const token = sessionStorage.getItem("token");
+  const user = useSelector((state) => state.user.user);
 
-  const isAuthenticated = user && (user.level === permissionLevel || user.level === "admin");
+  const isAuthenticated =
+    token && user && (user.level === permissionLevel || user.level === "admin");
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
