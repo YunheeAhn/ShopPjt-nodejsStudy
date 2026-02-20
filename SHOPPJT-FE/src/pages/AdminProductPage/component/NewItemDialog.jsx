@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { styled } from "@mui/material/styles";
@@ -32,7 +32,7 @@ const InitialFormData = {
   description: "",
   category: [],
   status: "active",
-  price: 0,
+  price: "",
 };
 
 const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
@@ -99,7 +99,7 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
 
     if (mode === "new") {
       // 새 상품 만들기
-      // dispatch(createProduct({ ...formData, stock: totalStock }));
+      dispatch(createProduct({ ...formData, stock: totalStock }));
     } else {
       // 상품 수정하기
       // dispatch(editProduct({ ...formData, stock: totalStock }));
@@ -144,9 +144,9 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
     }
   };
 
-  const uploadImage = (url) => {
-    setFormData({ ...formData, image: url });
-  };
+  const uploadImage = useCallback((url) => {
+    setFormData((prev) => ({ ...prev, image: url }));
+  }, []);
 
   return (
     <StyledDialog open={showDialog} onClose={handleClose} fullWidth maxWidth="md">
@@ -398,13 +398,15 @@ const StockErrorText = styled(Typography)(({ theme }) => ({
 
 const StockList = styled("div")(() => ({
   display: "flex",
+  flexDirection: "column",
   width: "100%",
+  gap: "10px",
 }));
 
 const StockRow = styled("div")(() => ({
   display: "flex",
   gap: "10px",
-  width: "100%",
+  width: "100% !important",
 
   "& + div": {
     width: "calc((100% - 40px) / 2)",
