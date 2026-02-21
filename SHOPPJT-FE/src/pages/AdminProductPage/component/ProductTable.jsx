@@ -34,7 +34,7 @@ const ProductTable = ({ header, data, deleteItem, openEditForm }) => {
             {data.length > 0 ? (
               data.map((item, index) => (
                 <TableRow key={index} hover>
-                  <BodyCell>{index}</BodyCell>
+                  <BodyCell>{index + 1}</BodyCell>
                   <BodyCell>{item.sku}</BodyCell>
                   <NameCell>{item.name}</NameCell>
                   <BodyCell>{currencyFormat(item.price)}</BodyCell>
@@ -84,7 +84,7 @@ const ProductTable = ({ header, data, deleteItem, openEditForm }) => {
             ) : (
               <TableRow>
                 <EmptyRowCell colSpan={header.length}>
-                  <Typography variant="body2">No Data to show</Typography>
+                  <Typography variant="body2">검색 결과가 없습니다</Typography>
                 </EmptyRowCell>
               </TableRow>
             )}
@@ -98,10 +98,10 @@ const ProductTable = ({ header, data, deleteItem, openEditForm }) => {
 export default ProductTable;
 
 // 스타일드컴포넌트
-
 const TableWrap = styled("div")(() => ({
   width: "100%",
   overflowX: "auto",
+  maxHeight: "calc(74vh - 80px)",
 }));
 
 const StyledTableContainer = styled(TableContainer)(({ theme }) => ({
