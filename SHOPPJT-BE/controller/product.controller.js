@@ -9,11 +9,16 @@ const productController = {};
 productController.createProduct = async (req, res) => {
   try {
     const { sku, name, size, image, category, description, price, stock, status } = req.body;
+
+    // 이미지 공백인 경우
+    const normalizedImage =
+      typeof image === "string" && image.trim().length > 0 ? image.trim() : undefined;
+
     const product = new Product({
       sku,
       name,
       size,
-      image,
+      image: normalizedImage,
       category,
       description,
       price,

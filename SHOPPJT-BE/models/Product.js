@@ -16,7 +16,8 @@ const productSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: true,
+      // required: true,
+      default: "https://shop-commercial-yh.netlify.app/public/image/default-image.png",
     },
     category: {
       type: Array,
