@@ -41,7 +41,7 @@ const InitialFormData = {
 };
 
 const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
-  const { error, success, selectedProduct } = useSelector((state) => state.products);
+  const { error, success, selectedProduct } = useSelector((state) => state.product);
 
   const [formData, setFormData] = useState(
     mode === "new" ? { ...InitialFormData } : selectedProduct,
