@@ -155,15 +155,19 @@ const AddButton = styled(Button)(() => ({
   fontWeight: 700,
 }));
 
-const PaginationWrap = styled("div")(({ theme }) => ({
+export const PaginationWrap = styled("div")(({ theme }) => ({
   display: "flex",
+
   justifyContent: "center",
-  marginTop: theme.spacing(2),
+  marginTop: "30px",
+  "& ul": {
+    display: "flex",
+    gap: 8,
+  },
 
   "& .pagination": {
     display: "flex",
     alignItems: "center",
-    gap: theme.spacing(0.5),
     padding: 0,
     margin: 0,
   },
