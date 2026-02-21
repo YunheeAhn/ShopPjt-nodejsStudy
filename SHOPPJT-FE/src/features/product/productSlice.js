@@ -73,6 +73,8 @@ const productSlice = createSlice({
     },
     clearError: (state) => {
       state.error = "";
+    },
+    clearSuccess: (state) => {
       state.success = false;
     },
   },
@@ -81,6 +83,7 @@ const productSlice = createSlice({
       .addCase(createProduct.pending, (state) => {
         state.loading = true;
         state.error = "";
+        state.success = false;
       })
       .addCase(createProduct.fulfilled, (state) => {
         state.loading = false;
@@ -106,5 +109,6 @@ const productSlice = createSlice({
   },
 });
 
-export const { setSelectedProduct, setFilteredList, clearError } = productSlice.actions;
+export const { setSelectedProduct, setFilteredList, clearError, clearSuccess } =
+  productSlice.actions;
 export default productSlice.reducer;

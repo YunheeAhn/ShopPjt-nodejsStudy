@@ -21,7 +21,12 @@ import MenuItem from "@mui/material/MenuItem";
 
 import CloudinaryUploadWidget from "../../../utils/CloudinaryUploadWidget";
 import { CATEGORY, STATUS, SIZE } from "../../../constants/product.constants";
-import { clearError, createProduct, editProduct } from "../../../features/product/productSlice";
+import {
+  clearError,
+  createProduct,
+  editProduct,
+  clearSuccess,
+} from "../../../features/product/productSlice";
 
 /** 초기값 */
 const InitialFormData = {
@@ -36,7 +41,7 @@ const InitialFormData = {
 };
 
 const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
-  const { error, success, selectedProduct } = useSelector((state) => state.product);
+  const { error, success, selectedProduct } = useSelector((state) => state.products);
 
   const [formData, setFormData] = useState(
     mode === "new" ? { ...InitialFormData } : selectedProduct,
@@ -47,40 +52,43 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (success) setShowDialog(false);
-  }, [success, setShowDialog]);
+    if (success) {
+      setShowDialog(false);
+      dispatch(clearSuccess());
+    }
+  }, [success, setShowDialog, dispatch]);
 
+  // ✅ 다이얼로그 열릴 때 초기화 로직(에러/성공 리셋 + 폼 세팅)
   useEffect(() => {
-    // 원본 코드 로직 유지(기능 변경 안 함)
-    if (error || !success) {
-      dispatch(clearError());
+    if (!showDialog) return;
+
+    dispatch(clearError());
+    dispatch(clearSuccess());
+
+    if (mode === "edit") {
+      setFormData(selectedProduct);
+
+      const sizeArray = Object.keys(selectedProduct?.stock || {}).map((size) => [
+        size,
+        selectedProduct.stock[size],
+      ]);
+      setStock(sizeArray);
+    } else {
+      setFormData({ ...InitialFormData });
+      setStock([]);
     }
 
-    if (showDialog) {
-      if (mode === "edit") {
-        setFormData(selectedProduct);
+    setStockError(false);
+  }, [showDialog, mode, selectedProduct, dispatch]);
 
-        const sizeArray = Object.keys(selectedProduct.stock || {}).map((size) => [
-          size,
-          selectedProduct.stock[size],
-        ]);
-        setStock(sizeArray);
-      } else {
-        setFormData({ ...InitialFormData });
-        setStock([]);
-      }
-      setStockError(false);
-    }
-  }, [showDialog, mode, selectedProduct, error, success, dispatch]);
-
+  // ✅ stock이 생기면 에러 해제
   useEffect(() => {
-    if (stock.length > 0 && stockError) {
-      setStockError(false);
-    }
+    if (stock.length > 0 && stockError) setStockError(false);
   }, [stock, stockError]);
 
   const handleClose = () => {
-    // 스타일만 요청이라 기능은 비워둠(원본 의도 유지)
+    dispatch(clearError());
+    dispatch(clearSuccess());
     setShowDialog(false);
   };
 
