@@ -58,14 +58,14 @@ export default AppLayout;
 const SIDEBAR_WIDTH = 260;
 
 // 스타일드 컴포넌트
-const Root = styled(Box)(({ theme }) => ({
+const Root = styled(Box)(() => ({
   minHeight: "100vh",
-  backgroundColor: theme.palette.background.default,
+  // backgroundColor: theme.palette.background.default,
 }));
 
 const AdminLayout = styled(Box)(() => ({
   display: "flex",
-  minHeight: "100vh",
+  maxHeight: "100vh",
 }));
 
 const AdminSidebarWrap = styled(Box)(({ theme }) => ({
