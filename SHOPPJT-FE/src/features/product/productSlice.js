@@ -11,7 +11,7 @@ export const getProductList = createAsyncThunk(
       if (response.status !== 200) {
         throw new Error(response.error);
       }
-      return response.data.products;
+      return response.data;
     } catch (error) {
       return rejectWithValue(
         error?.response?.data?.error || error?.message || "상품 목록 불러오기 실패",
@@ -37,7 +37,7 @@ export const createProduct = createAsyncThunk(
       dispatch(showToastMessage({ message: "상품 생성이 완료 되었습니다", status: "success" }));
       dispatch(getProductList());
 
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(error.error);
     }
@@ -102,8 +102,8 @@ const productSlice = createSlice({
       .addCase(getProductList.fulfilled, (state, action) => {
         state.loading = false;
         state.productList = action.payload.data;
-        state.error = "";
         state.totalPageNum = action.payload.totalPageNum;
+        state.error = "";
       })
       .addCase(getProductList.rejected, (state, action) => {
         state.loading = false;
