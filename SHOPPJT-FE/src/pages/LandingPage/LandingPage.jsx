@@ -27,18 +27,27 @@ const LandingPage = () => {
   });
 
   useEffect(() => {
-    dispatch(getProductList({ ...searchQuery, pageSize: 8 }));
-  }, [query]);
+    const next = {
+      page: query.get("page") || 1,
+      name: query.get("name") || "",
+    };
+
+    setSearchQuery(next);
+    dispatch(getProductList({ ...next, pageSize: 8 }));
+  }, [query, dispatch]);
 
   useEffect(() => {
     const nextQuery = { ...searchQuery };
 
     if (nextQuery.name === "") delete nextQuery.name;
 
-    const params = new URLSearchParams(nextQuery);
+    const nextParams = new URLSearchParams(nextQuery).toString();
+    const currentParams = query.toString();
 
-    navigate("?" + params.toString());
-  }, [searchQuery]);
+    if (nextParams !== currentParams) {
+      navigate("?" + nextParams);
+    }
+  }, [searchQuery, navigate, query]);
 
   const handlePageClick = ({ selected }) => {
     setSearchQuery((prev) => ({ ...prev, page: selected + 1 }));
