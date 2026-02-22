@@ -72,4 +72,40 @@ productController.getProducts = async (req, res) => {
   }
 };
 
+// 상품 정보 수정하기
+productController.updateProduct = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { sku, name, size, image, category, description, price, stock, status } = req.body;
+    const product = await Product.findByIdAndUpdate(
+      { _id: productId },
+      { name, size, image, category, description, price, stock, status },
+      { new: true },
+    );
+    if (!product) {
+      throw new Error("Item doesn't exist");
+    }
+    res.status(200).json({ status: "success", data: product });
+  } catch (error) {
+    res.status(400).json({ status: "fail", error: error.message });
+  }
+};
+
+// 상품 정보 삭제하기
+productController.deleteProduct = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const deleted = await Product.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ status: "fail", error: "상품을 찾을 수 없습니다" });
+    }
+
+    return res.status(200).json({ status: "success", data: deleted });
+  } catch (error) {
+    return res.status(400).json({ status: "fail", error: error.message });
+  }
+};
+
 module.exports = productController;
