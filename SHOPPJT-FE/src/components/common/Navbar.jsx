@@ -35,6 +35,7 @@ const Navbar = ({ user }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md")); // 네 테마 기준 md=980
 
+  const [keyword, setKeyword] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
@@ -53,6 +54,8 @@ const Navbar = ({ user }) => {
       pathname: "/",
       search: `?${createSearchParams({ name: v })}`,
     });
+
+    setKeyword("");
   };
 
   const onCheckEnter = (event) => {
@@ -165,8 +168,14 @@ const Navbar = ({ user }) => {
               >
                 <SearchIcon fontSize="small" />
                 <InputBase
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
                   placeholder="제품검색"
-                  onKeyDown={onCheckEnter}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      goSearch(keyword);
+                    }
+                  }}
                   sx={{ flex: 1, fontSize: "0.95rem" }}
                 />
               </Paper>
@@ -235,11 +244,12 @@ const Navbar = ({ user }) => {
             >
               <SearchIcon fontSize="small" />
               <InputBase
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
                 placeholder="제품검색"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    goSearch(e.target.value || "");
-                    setShowMobileSearch(false);
+                    goSearch(keyword);
                   }
                 }}
                 sx={{ flex: 1 }}
