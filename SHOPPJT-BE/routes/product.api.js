@@ -34,5 +34,8 @@ router.delete(
   productController.deleteProduct,
 );
 
+// 상품 디테일 가져오기 endpoint 연결
+router.get("/:id", productController.getProductById);
+
 // 라우터 모듈 내보내기
 module.exports = router;
