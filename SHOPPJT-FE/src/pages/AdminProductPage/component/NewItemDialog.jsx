@@ -103,14 +103,13 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
     const totalStock = stock.reduce((total, item) => {
       return { ...total, [item[0]]: parseInt(item[1]) };
     }, {});
-    console.log("totalStock", totalStock);
 
     if (mode === "new") {
       // 새 상품 만들기
       dispatch(createProduct({ ...formData, stock: totalStock }));
     } else {
       // 상품 수정하기
-      // dispatch(editProduct({ ...formData, stock: totalStock }));
+      dispatch(editProduct({ ...formData, stock: totalStock, id: selectedProduct?._id }));
     }
   };
 
