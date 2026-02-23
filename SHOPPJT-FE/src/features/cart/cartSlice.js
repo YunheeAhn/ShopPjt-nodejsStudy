@@ -11,7 +11,6 @@ const initialState = {
   totalPrice: 0,
 };
 
-// Async thunk actions
 export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async ({ id, size }, { rejectWithValue, dispatch }) => {
@@ -36,12 +35,42 @@ export const addToCart = createAsyncThunk(
 
 export const getCartList = createAsyncThunk(
   "cart/getCartList",
-  async (_, { rejectWithValue, dispatch }) => {},
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await api.get("/cart");
+
+      if (response.status !== 200) {
+        throw new Error(response.error);
+      }
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data?.error || error?.message || "카트 조회 실패");
+    }
+  },
 );
 
 export const deleteCartItem = createAsyncThunk(
   "cart/deleteCartItem",
-  async (id, { rejectWithValue, dispatch }) => {},
+  async (id, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await api.delete(`/cart/${id}`);
+
+      if (response.status !== 200) {
+        throw new Error(response.error);
+      }
+
+      dispatch(showToastMessage({ message: "카트 아이템이 삭제되었습니다.", status: "success" }));
+      dispatch(getCartList()); // 삭제 후 목록 다시 불러오기
+
+      return response.data.cartItemQty;
+    } catch (error) {
+      dispatch(showToastMessage({ message: "삭제에 실패했습니다.", status: "error" }));
+      return rejectWithValue(
+        error?.response?.data?.error || error?.message || "카트 아이템 삭제 실패",
+      );
+    }
+  },
 );
 
 export const updateQty = createAsyncThunk(
@@ -51,7 +80,17 @@ export const updateQty = createAsyncThunk(
 
 export const getCartQty = createAsyncThunk(
   "cart/getCartQty",
-  async (_, { rejectWithValue, dispatch }) => {},
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const response = await api.get("/cart/qty");
+      if (response.status !== 200) throw new Error(response.error);
+      return response.data.cartItemQty;
+    } catch (error) {
+      return rejectWithValue(
+        error?.response?.data?.error || error?.message || "카트 수량 조회 실패",
+      );
+    }
+  },
 );
 
 const cartSlice = createSlice({
@@ -75,6 +114,33 @@ const cartSlice = createSlice({
       .addCase(addToCart.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(getCartList.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getCartList.fulfilled, (state, action) => {
+        state.loading = false;
+        state.cartList = action.payload.data;
+        state.totalPrice = action.payload.totalPrice;
+      })
+      .addCase(getCartList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteCartItem.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteCartItem.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = "";
+        state.cartItemCount = action.payload;
+      })
+      .addCase(deleteCartItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getCartQty.fulfilled, (state, action) => {
+        state.cartItemCount = action.payload;
       });
   },
 });
