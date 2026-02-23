@@ -140,6 +140,14 @@ const theme = createTheme(baseTheme, {
       },
     },
 
+    // 컨테이너 기본 톤
+    MuiContainer: {
+      defaultProps: {
+        maxWidth: false,
+        disableGutters: true,
+      },
+    },
+
     // 인풋 기본 톤
     MuiOutlinedInput: {
       styleOverrides: {
