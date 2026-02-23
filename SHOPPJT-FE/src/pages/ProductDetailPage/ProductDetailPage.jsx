@@ -9,7 +9,6 @@ import { addToCart } from "../../features/cart/cartSlice";
 // MUI
 import { styled } from "@mui/material/styles";
 import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
@@ -26,12 +25,27 @@ const ProductDetail = () => {
   const navigate = useNavigate();
 
   const addItemToCart = () => {
-    //사이즈를 아직 선택안했다면 에러
-    // 아직 로그인을 안한유저라면 로그인페이지로
+    if (size === "") {
+      //사이즈를 아직 선택안했다면 에러
+      setSizeError(true);
+      return;
+    }
+    if (!user) {
+      // 아직 로그인을 안한유저라면 로그인페이지로 리다이렉트
+      navigate("/login");
+      return;
+    }
     // 카트에 아이템 추가하기
+    dispatch(addToCart({ id, size }));
   };
   const selectSize = (value) => {
     // 사이즈 추가하기
+    if (sizeError) {
+      // 사이즈 선택한 경우
+      // 사이즈 미선택 에러 메세지 없애기
+      setSizeError(false);
+    }
+    setSize(value);
   };
 
   useEffect(() => {
