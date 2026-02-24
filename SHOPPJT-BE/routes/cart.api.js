@@ -19,5 +19,8 @@ router.delete("/:id", authController.authenticate, cartController.deleteCartItem
 // 카트 아이템 수 endpoint 연결
 router.get("/qty", authController.authenticate, cartController.getCartQty);
 
+// 카트 아이템 수량 변경 endpoint 연결
+router.put("/:id", authController.authenticate, cartController.editCartItem);
+
 // 라우터 모듈 내보내기
 module.exports = router;
