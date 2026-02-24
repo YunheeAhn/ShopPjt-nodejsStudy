@@ -75,7 +75,15 @@ export const deleteCartItem = createAsyncThunk(
 
 export const updateQty = createAsyncThunk(
   "cart/updateQty",
-  async ({ id, value }, { rejectWithValue }) => {},
+  async ({ id, value }, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/cart/${id}`, { qty: value });
+      if (response.status !== 200) throw new Error(response.error);
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  },
 );
 
 export const getCartQty = createAsyncThunk(
@@ -99,6 +107,15 @@ const cartSlice = createSlice({
   reducers: {
     initialCart: (state) => {
       state.cartItemCount = 0;
+    },
+
+    resetCart: (state) => {
+      state.loading = false;
+      state.error = "";
+      state.cartList = [];
+      state.selectedItem = {};
+      state.cartItemCount = 0;
+      state.totalPrice = 0;
     },
   },
   extraReducers: (builder) => {
@@ -141,9 +158,17 @@ const cartSlice = createSlice({
       })
       .addCase(getCartQty.fulfilled, (state, action) => {
         state.cartItemCount = action.payload;
+      })
+      .addCase(updateQty.fulfilled, (state, action) => {
+        state.loading = false;
+        state.cartList = action.payload;
+        state.totalPrice = action.payload.reduce(
+          (total, item) => total + item.productId.price * item.qty,
+          0,
+        );
       });
   },
 });
 
 export default cartSlice.reducer;
-export const { initialCart } = cartSlice.actions;
+export const { initialCart, resetCart } = cartSlice.actions;
