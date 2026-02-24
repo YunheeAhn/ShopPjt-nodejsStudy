@@ -39,7 +39,7 @@ const CartPage = () => {
 
           <OrderWrap>
             <ReceiptArea>
-              <OrderReceipt />
+              <OrderReceipt cartList={cartList} totalPrice={totalPrice} />
             </ReceiptArea>
           </OrderWrap>
         </CartPageInner>
