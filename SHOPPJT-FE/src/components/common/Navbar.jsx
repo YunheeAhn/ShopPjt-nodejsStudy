@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Link as RouterLink, useNavigate, createSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../features/user/userSlice";
+import { resetCart } from "../../features/cart/cartSlice";
 
 // MUI
 import AppBar from "@mui/material/AppBar";
@@ -65,6 +66,7 @@ const Navbar = ({ user }) => {
 
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(resetCart());
   };
 
   return (
