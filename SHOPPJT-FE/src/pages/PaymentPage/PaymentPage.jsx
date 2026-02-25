@@ -90,49 +90,48 @@ const PaymentPage = () => {
   }, [loading, cartList, navigate]);
 
   return (
-    <PageWrap maxWidth={false}>
+    <PageWrap>
       <Layout>
-        <Grid container spacing={3}>
-          <Grid item xs={12} lg={7}>
-            <Section>
-              <SectionTitle variant="h2">배송 주소</SectionTitle>
+        <OrderWrap>
+          <Section>
+            <SectionTitle variant="h2">배송 주소</SectionTitle>
 
-              <FormWrap component="form" onSubmit={handleSubmit}>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="성"
-                      type="text"
-                      onChange={handleFormChange}
-                      required
-                      name="lastName"
-                      fullWidth
-                    />
-                  </Grid>
+            <FormWrap component="form" onSubmit={handleSubmit}>
+              <FormInner>
+                <div>
+                  <TextField
+                    label="성"
+                    type="text"
+                    onChange={handleFormChange}
+                    required
+                    name="lastName"
+                    fullWidth
+                  />
+                </div>
 
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      label="이름"
-                      type="text"
-                      onChange={handleFormChange}
-                      required
-                      name="firstName"
-                      fullWidth
-                    />
-                  </Grid>
+                <div>
+                  <TextField
+                    label="이름"
+                    type="text"
+                    onChange={handleFormChange}
+                    required
+                    name="firstName"
+                    fullWidth
+                  />
+                </div>
 
-                  <Grid item xs={12}>
-                    <TextField
-                      label="연락처"
-                      placeholder="010-xxx-xxxxx"
-                      onChange={handleFormChange}
-                      required
-                      name="contact"
-                      fullWidth
-                    />
-                  </Grid>
-
-                  <Grid item xs={12}>
+                <div>
+                  <TextField
+                    label="연락처"
+                    placeholder="010-xxx-xxxxx"
+                    onChange={handleFormChange}
+                    required
+                    name="contact"
+                    fullWidth
+                  />
+                </div>
+                <AddressWrap>
+                  <Address>
                     <TextField
                       label="주소"
                       placeholder="Apartment, studio, or floor"
@@ -141,9 +140,9 @@ const PaymentPage = () => {
                       name="address"
                       fullWidth
                     />
-                  </Grid>
+                  </Address>
 
-                  <Grid item xs={12} sm={6}>
+                  <Address>
                     <TextField
                       label="City"
                       onChange={handleFormChange}
@@ -151,9 +150,9 @@ const PaymentPage = () => {
                       name="city"
                       fullWidth
                     />
-                  </Grid>
+                  </Address>
 
-                  <Grid item xs={12} sm={6}>
+                  <Address>
                     <TextField
                       label="Zip"
                       onChange={handleFormChange}
@@ -161,33 +160,30 @@ const PaymentPage = () => {
                       name="zip"
                       fullWidth
                     />
-                  </Grid>
-                </Grid>
+                  </Address>
+                </AddressWrap>
+              </FormInner>
 
-                <MobileReceiptArea>
-                  <OrderReceipt cartList={cartList} totalPrice={totalPrice} />
-                </MobileReceiptArea>
+              <PaymentTitle variant="h2">결제 정보</PaymentTitle>
 
-                <PaymentTitle variant="h2">결제 정보</PaymentTitle>
-                <PaymentForm
-                  cardValue={cardValue}
-                  handleInputFocus={handleInputFocus}
-                  handlePaymentInfoChange={handlePaymentInfoChange}
-                />
+              <PaymentForm
+                cardValue={cardValue}
+                handleInputFocus={handleInputFocus}
+                handlePaymentInfoChange={handlePaymentInfoChange}
+              />
 
-                <PayButton variant="contained" type="submit">
-                  결제하기
-                </PayButton>
-              </FormWrap>
-            </Section>
-          </Grid>
+              <PayButton variant="contained" type="submit">
+                결제하기
+              </PayButton>
+            </FormWrap>
+          </Section>
+        </OrderWrap>
 
-          <Grid item xs={12} lg={5}>
-            <ReceiptArea>
-              <OrderReceipt cartList={cartList} totalPrice={totalPrice} />
-            </ReceiptArea>
-          </Grid>
-        </Grid>
+        <CreditCardWrap>
+          <ReceiptArea>
+            <OrderReceipt cartList={cartList} totalPrice={totalPrice} />
+          </ReceiptArea>
+        </CreditCardWrap>
       </Layout>
     </PageWrap>
   );
@@ -204,6 +200,34 @@ const Layout = styled(Box)(({ theme }) => ({
   width: "100%",
   paddingTop: theme.spacing(2),
   paddingBottom: theme.spacing(4),
+
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "30px",
+
+  [theme.breakpoints.down("md")]: {
+    gap: "20px",
+    flexDirection: "column-reverse",
+  },
+
+  [theme.breakpoints.down("sm")]: {
+    gap: "10px",
+  },
+}));
+
+const OrderWrap = styled("div")(({ theme }) => ({
+  width: "calc(70% - 30px)",
+
+  [theme.breakpoints.down("md")]: {
+    width: "100%",
+  },
+}));
+const CreditCardWrap = styled("div")(({ theme }) => ({
+  width: "30%",
+
+  [theme.breakpoints.down("md")]: {
+    width: "100%",
+  },
 }));
 
 const Section = styled(Box)(() => ({
@@ -217,6 +241,31 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
 
 const FormWrap = styled(Box)(() => ({
   width: "100%",
+}));
+
+const FormInner = styled("div")(() => ({
+  width: "100%",
+  display: "flex",
+  gap: "10px",
+  flexDirection: "column",
+}));
+
+const AddressWrap = styled("div")(() => ({
+  width: "100%",
+  display: "flex",
+  gap: "10px",
+
+  "& + div": {
+    width: "calc((100% - 20px) / 3)",
+
+    "& TextField": {
+      width: "100%",
+    },
+  },
+}));
+
+const Address = styled("div")(() => ({
+  width: "calc((100% - 20px) / 3)",
 }));
 
 const PaymentTitle = styled(Typography)(() => ({
@@ -236,14 +285,4 @@ const PayButton = styled(Button)(() => ({
 
 const ReceiptArea = styled(Box)(() => ({
   width: "100%",
-  "@media screen and (max-width: 63rem)": {
-    display: "none",
-  },
-}));
-
-const MobileReceiptArea = styled(Box)(() => ({
-  display: "none",
-  "@media screen and (max-width: 63rem)": {
-    display: "block",
-  },
 }));
