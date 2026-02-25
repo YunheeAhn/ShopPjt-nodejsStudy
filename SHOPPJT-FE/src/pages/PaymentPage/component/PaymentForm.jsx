@@ -1,6 +1,6 @@
 import React from "react";
-// import Cards from "react-credit-cards-2";
-// import "react-credit-cards-2/dist/es/styles-compiled.css";
+import Cards from "react-credit-cards-2";
+import "react-credit-cards-2/dist/es/styles-compiled.css";
 
 // MUI
 import { styled } from "@mui/material/styles";

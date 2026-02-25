@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import OrderReceipt from "./component/OrderReceipt";
 import PaymentForm from "./component/PaymentForm";
@@ -17,6 +17,7 @@ import Button from "@mui/material/Button";
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
+  const { cartList, totalPrice, loading } = useSelector((state) => state.cart);
   const { orderNum } = useSelector((state) => state.order);
   const [cardValue, setCardValue] = useState({
     cvc: "",
@@ -43,22 +44,51 @@ const PaymentPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     // 오더 생성하기
+    const { firstName, lastName, contact, address, city, zip } = shipInfo;
+
+    dispatch(
+      createOrder({
+        totalPrice,
+        shipTo: { address, city, zip },
+        contact: { firstName, lastName, contact },
+        orderList: cartList.map((item) => ({
+          productId: item.productId._id,
+          price: item.productId.price,
+          qty: item.qty,
+          size: item.size,
+        })),
+      }),
+    );
   };
 
   const handleFormChange = (event) => {
     //shipInfo에 값 넣어주기
+    const { name, value } = event.target;
+    setShipInfo({ ...shipInfo, [name]: value });
   };
 
   const handlePaymentInfoChange = (event) => {
     //카드정보 넣어주기
+    const { name, value } = event.target;
+    const newValue = name === "expiry" ? cc_expires_format(value) : value;
+    setCardValue({ ...cardValue, [name]: newValue });
   };
 
   const handleInputFocus = (e) => {
     setCardValue({ ...cardValue, focus: e.target.name });
   };
+
   // if (cartList?.length === 0) {
+  //   // 주문할 아이템이 없다면 주문하기로 안넘어가게 막음
   //   navigate("/cart");
-  // }// 주문할 아이템이 없다면 주문하기로 안넘어가게 막음
+  // }
+
+  useEffect(() => {
+    if (!loading && cartList?.length === 0) {
+      navigate("/cart", { replace: true });
+    }
+  }, [loading, cartList, navigate]);
+
   return (
     <PageWrap maxWidth={false}>
       <Layout>
@@ -134,9 +164,16 @@ const PaymentPage = () => {
                   </Grid>
                 </Grid>
 
-                <MobileReceiptArea>{/* <OrderReceipt /> */}</MobileReceiptArea>
+                <MobileReceiptArea>
+                  <OrderReceipt cartList={cartList} totalPrice={totalPrice} />
+                </MobileReceiptArea>
 
                 <PaymentTitle variant="h2">결제 정보</PaymentTitle>
+                <PaymentForm
+                  cardValue={cardValue}
+                  handleInputFocus={handleInputFocus}
+                  handlePaymentInfoChange={handlePaymentInfoChange}
+                />
 
                 <PayButton variant="contained" type="submit">
                   결제하기
@@ -146,7 +183,9 @@ const PaymentPage = () => {
           </Grid>
 
           <Grid item xs={12} lg={5}>
-            <ReceiptArea>{/* <OrderReceipt  /> */}</ReceiptArea>
+            <ReceiptArea>
+              <OrderReceipt cartList={cartList} totalPrice={totalPrice} />
+            </ReceiptArea>
           </Grid>
         </Grid>
       </Layout>
