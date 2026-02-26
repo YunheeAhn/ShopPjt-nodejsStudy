@@ -37,7 +37,7 @@ const OrderCompletePage = () => {
         </CheckIconWrap>
 
         <Title variant="h2">예약이 완료됬습니다!</Title>
-        <InfoText>예약번호:하드코딩</InfoText>
+        <InfoText>예약번호: {orderNum} </InfoText>
 
         <Desc>
           예약 확인은 내 예약 메뉴에서 확인해주세요

@@ -22,9 +22,18 @@ export const createOrder = createAsyncThunk(
       if (response.status !== 200) {
         throw new Error(response.error);
       }
+      // 카트 수량 가져오기
+      dispatch(getCartQty());
       return response.data.orderNum;
     } catch (error) {
-      const msg = error?.response?.data?.error || error?.message || "주문 실패 했습니다";
+      const msg =
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        error?.error ||
+        (typeof error === "string" ? error : "") ||
+        error?.message ||
+        "주문 실패 했습니다";
+
       dispatch(showToastMessage({ message: msg, status: "error" }));
       return rejectWithValue(msg);
     }

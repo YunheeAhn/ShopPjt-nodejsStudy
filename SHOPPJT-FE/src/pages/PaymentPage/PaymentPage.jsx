@@ -39,6 +39,10 @@ const PaymentPage = () => {
 
   useEffect(() => {
     // 오더번호를 받으면 어디로 갈까?
+
+    if (orderNum !== "") {
+      navigate("/payment/success");
+    }
   }, [orderNum]);
 
   const handleSubmit = (event) => {
@@ -77,11 +81,6 @@ const PaymentPage = () => {
   const handleInputFocus = (e) => {
     setCardValue({ ...cardValue, focus: e.target.name });
   };
-
-  // if (cartList?.length === 0) {
-  //   // 주문할 아이템이 없다면 주문하기로 안넘어가게 막음
-  //   navigate("/cart");
-  // }
 
   useEffect(() => {
     if (!loading && cartList?.length === 0) {
