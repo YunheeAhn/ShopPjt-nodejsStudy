@@ -18,7 +18,9 @@ orderController.createOrder = async (req, res) => {
 
     // 재고 충분하지 않는 아이템이 있는 경우?
     if (insufficientStockItems.length > 0) {
-      const errorMessage = insufficientStockItems.reduce((total, item) => (total += item.message));
+      const errorMessage = insufficientStockItems
+        .reduce((total, item) => total + item.message + "\n", "")
+        .trim();
       throw new Error(errorMessage);
     }
 
@@ -34,6 +36,9 @@ orderController.createOrder = async (req, res) => {
 
     // 새로운 오더 저장하기
     await newOrder.save();
+
+    // 카트 비우기
+
     // status 보내기
     res.status(200).json({ status: "success", orderNum: newOrder.orderNum });
   } catch (error) {
