@@ -20,7 +20,7 @@ const AdminOrderPage = () => {
 
   const [searchQuery, setSearchQuery] = useState({
     page: query.get("page") || 1,
-    ordernum: query.get("ordernum") || "",
+    orderNum: query.get("orderNum") || "",
   });
 
   const [open, setOpen] = useState(false);
@@ -42,9 +42,9 @@ const AdminOrderPage = () => {
   }, [query]);
 
   useEffect(() => {
-    // 원본 로직 유지: ordernum 비면 query에서 제거
+    // 원본 로직 유지: orderNum 비면 query에서 제거
     const next = { ...searchQuery };
-    if (next.ordernum === "") delete next.ordernum;
+    if (next.orderNum === "") delete next.orderNum;
 
     const params = new URLSearchParams(next);
     navigate("?" + params.toString());
@@ -73,7 +73,7 @@ const AdminOrderPage = () => {
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
               placeholder="오더번호"
-              field="ordernum"
+              field="orderNum"
             />
           </SearchRow>
 
