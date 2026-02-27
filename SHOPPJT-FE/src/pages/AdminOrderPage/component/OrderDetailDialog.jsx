@@ -202,6 +202,6 @@ const ActionRow = styled(DialogActions)(({ theme }) => ({
 }));
 
 const LightButton = styled(Button)(({ theme }) => ({
-  background: theme.palette.background.default,
+  // background: theme.palette.background.default,
   border: `1px solid ${theme.palette.divider}`,
 }));
