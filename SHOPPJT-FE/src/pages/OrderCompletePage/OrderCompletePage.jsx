@@ -36,14 +36,14 @@ const OrderCompletePage = () => {
           <CheckCircleRoundedIcon />
         </CheckIconWrap>
 
-        <Title variant="h2">예약이 완료됬습니다!</Title>
-        <InfoText>예약번호: {orderNum} </InfoText>
+        <Title variant="h2">주문이 완료됬습니다!</Title>
+        <InfoText>주문 번호: {orderNum} </InfoText>
 
         <Desc>
-          예약 확인은 내 예약 메뉴에서 확인해주세요
+          주문 확인은 내 주문 메뉴에서 확인해주세요
           <CenterLinkArea>
             <LinkButton component={RouterLink} to="/account/purchase" variant="outlined">
-              내 예약 바로가기
+              내 주문 바로가기
             </LinkButton>
           </CenterLinkArea>
         </Desc>
