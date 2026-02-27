@@ -14,6 +14,8 @@ import { badgeBg } from "../../../constants/order.constants";
 import { currencyFormat } from "../../../utils/number";
 
 const OrderTable = ({ header, data, openEditForm }) => {
+  const getStatusClassName = (status) => String(status || "").toLowerCase();
+
   return (
     <TableWrap>
       <StyledTableContainer component={Paper}>
@@ -33,7 +35,7 @@ const OrderTable = ({ header, data, openEditForm }) => {
                   key={item._id || `${item.orderNum}-${index}`}
                   onClick={() => openEditForm(item)}
                 >
-                  <BodyCell>{index}</BodyCell>
+                  <BodyCell>{index + 1}</BodyCell>
                   <BodyCell>{item.orderNum}</BodyCell>
                   <BodyCell>{item.createdAt?.slice?.(0, 10)}</BodyCell>
                   <BodyCell>{item.userId?.email}</BodyCell>
@@ -54,7 +56,7 @@ const OrderTable = ({ header, data, openEditForm }) => {
                   <BodyCell>{currencyFormat(item.totalPrice)}</BodyCell>
 
                   <BodyCell>
-                    <StatusChip label={item.status} className={item.status} />
+                    <StatusChip label={item.status} className={getStatusClassName(item.status)} />
                   </BodyCell>
                 </ClickRow>
               ))
@@ -107,29 +109,43 @@ const ClickRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const StatusChip = styled(Chip)(({ theme }) => ({
-  fontWeight: 700,
-  borderRadius: 999,
-  border: `1px solid ${theme.palette.divider}`,
-  color: theme.palette.text.primary,
+const StatusChip = styled(Chip)(({ theme }) => {
+  // 🔥 palette 키를 실제 색상값으로 변환하는 함수
+  const getPaletteColor = (paletteKey) => {
+    if (!paletteKey) return null;
 
-  /* status 별 색상 매핑 */
-  "&.pending": {
-    backgroundColor: badgeBg.pending,
-  },
-  "&.paid": {
-    backgroundColor: badgeBg.paid,
-  },
-  "&.shipping": {
-    backgroundColor: badgeBg.shipping,
-  },
-  "&.delivered": {
-    backgroundColor: badgeBg.delivered,
-  },
-  "&.cancelled": {
-    backgroundColor: badgeBg.cancelled,
-  },
-}));
+    if (paletteKey === "danger") {
+      return theme.palette.error.main; // danger → error 매핑
+    }
+
+    return theme.palette[paletteKey]?.main;
+  };
+
+  // 🔥 상태별 스타일 생성 함수
+  const makeStyle = (statusKey) => {
+    const paletteKey = badgeBg[statusKey]; // "primary" | "warning" | ...
+    const bgColor = getPaletteColor(paletteKey);
+
+    if (!bgColor) return {};
+
+    return {
+      backgroundColor: bgColor,
+      borderColor: bgColor,
+      color: theme.palette.getContrastText(bgColor),
+    };
+  };
+
+  return {
+    fontWeight: 700,
+    borderRadius: 999,
+    border: `1px solid ${theme.palette.divider}`,
+
+    "&.preparing": makeStyle("preparing"),
+    "&.shipping": makeStyle("shipping"),
+    "&.delivered": makeStyle("delivered"),
+    "&.refund": makeStyle("refund"),
+  };
+});
 
 const EmptyRowCell = styled(TableCell)(({ theme }) => ({
   padding: theme.spacing(4),
