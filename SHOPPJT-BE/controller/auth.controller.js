@@ -130,7 +130,7 @@ authController.loginWithGoogle = async (req, res) => {
       // 패스워드 랜덤생성
       const randomPassWord = "" + Math.floor(Math.random() * 10000);
       // 랜덤 생성 된 패스워드 암호화
-      const salt = await bcrypt.gentSalt(10);
+      const salt = await bcrypt.genSalt(10);
       const newPassWord = await bcrypt.hash(randomPassWord, salt);
 
       user = new User({

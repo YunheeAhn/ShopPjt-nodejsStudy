@@ -47,9 +47,13 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = async (credentialResponse) => {
-    //구글 로그인 하기
     console.log("google credentialResponse:", credentialResponse);
-    dispatch(loginWithGoogle(credentialResponse.credential));
+
+    const idToken = credentialResponse.credential;
+    const payload = JSON.parse(atob(idToken.split(".")[1]));
+    console.log("ID TOKEN aud:", payload.aud);
+
+    dispatch(loginWithGoogle(idToken));
   };
 
   return (
