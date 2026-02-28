@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import ProductCard from "./component/ProductCard";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductList } from "../../features/product/productSlice";
 
@@ -13,55 +13,56 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import { PaginationWrap } from "../AdminProductPage/AdminProductPage";
+import { useMemo } from "react";
 
 const LandingPage = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [query] = useSearchParams();
-
+  const [query, setQuery] = useSearchParams();
   const { productList, totalPageNum } = useSelector((state) => state.product);
 
-  const [searchQuery, setSearchQuery] = useState({
-    page: query.get("page") || 1,
-    name: query.get("name") || "",
-  });
+  const page = Number(query.get("page") || 1);
+  const name = query.get("name") || "";
+  const category = query.get("category") || "";
 
   useEffect(() => {
-    const next = {
-      page: query.get("page") || 1,
-      name: query.get("name") || "",
-    };
-
-    setSearchQuery(next);
-    dispatch(getProductList({ ...next, pageSize: 8 }));
-  }, [query, dispatch]);
-
-  useEffect(() => {
-    const nextQuery = { ...searchQuery };
-
-    if (nextQuery.name === "") delete nextQuery.name;
-
-    const nextParams = new URLSearchParams(nextQuery).toString();
-    const currentParams = query.toString();
-
-    if (nextParams !== currentParams) {
-      navigate("?" + nextParams);
-    }
-  }, [searchQuery, navigate, query]);
+    dispatch(getProductList({ page, name, category, pageSize: 8 }));
+  }, [dispatch, page, name, category]);
 
   const handlePageClick = ({ selected }) => {
-    setSearchQuery((prev) => ({ ...prev, page: selected + 1 }));
+    const next = new URLSearchParams(query);
+    next.set("page", String(selected + 1));
+    setQuery(next);
   };
 
-  const name = searchQuery.name;
+  const normalizedCategory = (v) =>
+    String(v ?? "")
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/-/g, "");
+
+  const categoryList = useMemo(() => {
+    if (!category) return productList;
+
+    return productList.filter((p) => {
+      const cats = Array.isArray(p?.category) ? p.category : [];
+      const strCats = cats.filter((x) => typeof x === "string").map(normalizedCategory);
+      return strCats.includes(normalizedCategory(category));
+    });
+  }, [productList, category]);
+
+  const emptyText = useMemo(() => {
+    if (name) return `${name}과 일치한 상품이 없습니다!`;
+    if (category) return "해당 카테고리에 등록된 제품이 없습니다!";
+    return "등록된 상품이 없습니다!";
+  }, [name, category]);
 
   return (
     <PageWrap>
       <Container>
-        {productList.length > 0 ? (
+        {categoryList.length > 0 ? (
           <>
             <ProductsFlex>
-              {productList.map((item) => (
+              {categoryList.map((item) => (
                 <CardItem key={item._id}>
                   <ProductCard item={item} />
                 </CardItem>
@@ -70,12 +71,12 @@ const LandingPage = () => {
 
             <PaginationWrap>
               <ReactPaginate
-                nextLabel="next >"
+                nextLabel=">"
                 onPageChange={handlePageClick}
                 pageRangeDisplayed={8}
                 pageCount={totalPageNum || 1}
-                forcePage={Number(searchQuery.page) - 1}
-                previousLabel="< previous"
+                forcePage={page - 1}
+                previousLabel="<"
                 renderOnZeroPageCount={null}
                 pageClassName="page-item"
                 pageLinkClassName="page-link"
@@ -94,11 +95,7 @@ const LandingPage = () => {
           </>
         ) : (
           <EmptyState>
-            {name === "" ? (
-              <Typography variant="h2">등록된 상품이 없습니다!</Typography>
-            ) : (
-              <Typography variant="h2">{name}과 일치한 상품이 없습니다!</Typography>
-            )}
+            <Typography variant="h2">{emptyText}</Typography>
           </EmptyState>
         )}
       </Container>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -14,6 +14,7 @@ import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import { CATEGORY } from "../../constants/product.constants";
 
 const ProductDetail = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,23 @@ const ProductDetail = () => {
   const [sizeError, setSizeError] = useState(false);
   const user = useSelector((state) => state.user.user);
   const navigate = useNavigate();
+
+  const normalizeCategory = (v) =>
+    String(v ?? "")
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/-/g, "");
+
+  const categoryLabel = useMemo(() => {
+    const firstCategory =
+      (selectedProduct?.category || []).find((x) => typeof x === "string") || "";
+
+    const match = CATEGORY.find(
+      (c) => normalizeCategory(c.value) === normalizeCategory(firstCategory),
+    );
+
+    return match?.label || "ALL";
+  }, [selectedProduct]);
 
   const addItemToCart = () => {
     if (size === "") {
@@ -68,7 +86,9 @@ const ProductDetail = () => {
           </ImageCol>
 
           <InfoCol>
-            <ProductInfoText>{selectedProduct.name}</ProductInfoText>
+            <ProductInfoText>
+              [{categoryLabel}] {selectedProduct.name}
+            </ProductInfoText>
             <ProductInfoText>₩ {currencyFormat(selectedProduct.price)}</ProductInfoText>
             <ProductInfoText>{selectedProduct.description}</ProductInfoText>
 

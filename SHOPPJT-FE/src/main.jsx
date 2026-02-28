@@ -14,8 +14,6 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "./theme.js";
 
-// const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>

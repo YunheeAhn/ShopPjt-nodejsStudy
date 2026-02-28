@@ -101,12 +101,12 @@ const AdminProductPage = () => {
 
           <PaginationWrap>
             <ReactPaginate
-              nextLabel="next >"
+              nextLabel=">"
               onPageChange={handlePageClick}
               pageRangeDisplayed={5}
               pageCount={totalPageNum}
               forcePage={Number(searchQuery.page) - 1}
-              previousLabel="< previous"
+              previousLabel="<"
               renderOnZeroPageCount={null}
               pageClassName="page-item"
               pageLinkClassName="page-link"

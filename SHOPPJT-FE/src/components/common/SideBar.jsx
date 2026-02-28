@@ -25,7 +25,7 @@ const SidebarContent = ({ onSelectMenu }) => (
   <Box sx={{ width: DRAWER_WIDTH }}>
     <Box sx={{ p: 2 }}>
       <Link to="/">
-        <Box component="img" src="/image/hm-logo.png" alt="hm-logo.png" sx={{ width: 100 }} />
+        <Box component="img" src="/image/keycap_logo.png" alt="키캡샵" sx={{ width: 100 }} />
       </Link>
     </Box>
 
@@ -89,8 +89,9 @@ const Sidebar = () => {
             }}
           >
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Box component="img" src="/image/hm-logo.png" alt="hm-logo.png" sx={{ width: 80 }} />
-
+              <Link to="/">
+                <Box component="img" src="/image/keycap_logo.png" alt="키캡샵" sx={{ width: 80 }} />
+              </Link>
               <IconButton onClick={() => setOpen(true)}>
                 <MenuIcon />
               </IconButton>

@@ -18,7 +18,7 @@ import Badge from "@mui/material/Badge";
 import InputBase from "@mui/material/InputBase";
 import Paper from "@mui/material/Paper";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
+import { styled, useTheme } from "@mui/material/styles";
 
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";
@@ -27,6 +27,7 @@ import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
+import { CATEGORY } from "../../constants/product.constants";
 
 const Navbar = ({ user }) => {
   const dispatch = useDispatch();
@@ -40,10 +41,7 @@ const Navbar = ({ user }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
 
-  const menuList = useMemo(
-    () => ["여성", "Divided", "남성", "신생아/유아", "아동", "H&M HOME", "Sale", "지속가능성"],
-    [],
-  );
+  const menuList = useMemo(() => [{ label: "All", value: "all" }, ...CATEGORY], []);
 
   const goSearch = (value) => {
     const v = value.trim();
@@ -67,6 +65,21 @@ const Navbar = ({ user }) => {
   const handleLogout = () => {
     dispatch(logout());
     dispatch(resetCart());
+  };
+
+  // 메뉴 클릭 핸들러
+  const goCategory = (value) => {
+    setKeyword("");
+
+    if (value === "all") {
+      navigate({ pathname: "/", search: `?${createSearchParams({ page: 1 })}` });
+      return;
+    }
+
+    navigate({
+      pathname: "/",
+      search: `?${createSearchParams({ page: 1, category: value })}`,
+    });
   };
 
   return (
@@ -121,7 +134,7 @@ const Navbar = ({ user }) => {
             >
               <Box
                 component="img"
-                src="/image/hm-logo.png"
+                src="/image/keycap_logo.png"
                 alt="키캡샵"
                 sx={{ width: 92, height: "auto" }}
               />
@@ -132,8 +145,8 @@ const Navbar = ({ user }) => {
           {!isMobile && (
             <Stack direction="row" spacing={2.5} alignItems="center" sx={{ flex: 1, ml: 3 }}>
               {menuList.map((menu) => (
-                <Button
-                  key={menu}
+                <MenuButton
+                  key={menu.value}
                   variant="text"
                   sx={{
                     color: "text.primary",
@@ -141,13 +154,10 @@ const Navbar = ({ user }) => {
                     px: 0.5,
                     "&:hover": { bgcolor: "transparent", color: "primary.main" },
                   }}
-                  onClick={() => {
-                    // 메뉴 클릭 시 동작이 아직 없어서 placeholder
-                    // 필요하면 navigate(`/products?category=${...}`) 같은 식으로 연결
-                  }}
+                  onClick={() => goCategory(menu.value)}
                 >
-                  {menu}
-                </Button>
+                  {menu.label}
+                </MenuButton>
               ))}
             </Stack>
           )}
@@ -284,19 +294,19 @@ const Navbar = ({ user }) => {
         <Box sx={{ p: 2 }}>
           <Stack spacing={1}>
             {menuList.map((menu) => (
-              <Button
-                key={menu}
+              <MenuButton
+                key={menu.value}
                 variant="text"
                 sx={{
-                  justifyContent: "flex-start",
                   color: "text.primary",
                   fontWeight: 600,
-                  py: 1,
+                  px: 0.5,
+                  "&:hover": { bgcolor: "transparent", color: "primary.main" },
                 }}
-                onClick={() => setDrawerOpen(false)}
+                onClick={() => goCategory(menu.value)}
               >
-                {menu}
-              </Button>
+                {menu.label}
+              </MenuButton>
             ))}
           </Stack>
         </Box>
@@ -306,3 +316,8 @@ const Navbar = ({ user }) => {
 };
 
 export default Navbar;
+
+const MenuButton = styled(Button)(() => ({
+  textTransform: "uppercase",
+  transition: "all .3s ease",
+}));

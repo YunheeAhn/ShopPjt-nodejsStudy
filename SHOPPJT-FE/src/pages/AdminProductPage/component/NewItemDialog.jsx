@@ -58,7 +58,6 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
     }
   }, [success, setShowDialog, dispatch]);
 
-  // ✅ 다이얼로그 열릴 때 초기화 로직(에러/성공 리셋 + 폼 세팅)
   useEffect(() => {
     if (!showDialog) return;
 
@@ -81,7 +80,6 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
     setStockError(false);
   }, [showDialog, mode, selectedProduct, dispatch]);
 
-  // ✅ stock이 생기면 에러 해제
   useEffect(() => {
     if (stock.length > 0 && stockError) setStockError(false);
   }, [stock, stockError]);
@@ -143,12 +141,11 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
   };
 
   const onHandleCategory = (event) => {
-    if (formData.category.includes(event.target.value)) {
-      const newCategory = formData.category.filter((item) => item !== event.target.value);
-      setFormData({ ...formData, category: [...newCategory] });
-    } else {
-      setFormData({ ...formData, category: [...formData.category, event.target.value] });
-    }
+    const { value } = event.target;
+    setFormData((prev) => ({
+      ...prev,
+      category: typeof value === "string" ? value.split(",") : value,
+    }));
   };
 
   const uploadImage = useCallback((url) => {
@@ -310,10 +307,15 @@ const NewItemDialog = ({ mode, showDialog, setShowDialog }) => {
                   multiple
                   value={formData.category}
                   onChange={onHandleCategory}
+                  renderValue={(selected) =>
+                    CATEGORY.filter((c) => selected.includes(c.value))
+                      .map((c) => c.label)
+                      .join(", ")
+                  }
                 >
-                  {CATEGORY.map((item, idx) => (
-                    <MenuItem key={idx} value={item.toLowerCase()}>
-                      {item}
+                  {CATEGORY.map((c) => (
+                    <MenuItem key={c.value} value={c.value}>
+                      {c.label}
                     </MenuItem>
                   ))}
                 </Select>

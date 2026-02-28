@@ -9,6 +9,8 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
+import { CATEGORY } from "../../../constants/product.constants";
+import { useMemo } from "react";
 
 const ProductCard = ({ item }) => {
   const navigate = useNavigate();
@@ -17,11 +19,28 @@ const ProductCard = ({ item }) => {
     navigate(`/product/${id}`);
   };
 
+  const normalizeCategory = (v) =>
+    String(v ?? "")
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/-/g, "");
+
+  const categoryLabel = useMemo(() => {
+    const firstCategory = (item?.category || []).find((x) => typeof x === "string") || "";
+
+    const match = CATEGORY.find(
+      (c) => normalizeCategory(c.value) === normalizeCategory(firstCategory),
+    );
+
+    return match?.label || "ALL";
+  }, [item]);
+
   return (
     <CardWrap>
       <CardActionArea onClick={() => showProduct(item._id)}>
         <Media component="img" image={item?.image} alt={item?.image} />
         <Content>
+          <CategoryText>{categoryLabel}</CategoryText>
           <ProductName variant="body1" className="prdName">
             {item?.name}
           </ProductName>
@@ -90,4 +109,20 @@ const ProductPrice = styled(Typography)(({ theme }) => ({
   marginTop: theme.spacing(0.5),
   color: theme.palette.text.secondary,
   fontWeight: 600,
+}));
+
+const CategoryText = styled("div")(({ theme }) => ({
+  fontSize: 14,
+  fontWeight: 700,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  color: theme.palette.background.paper,
+  background: theme.palette.primary.main,
+  borderRadius: "60px",
+  padding: "6px 12px",
+  boxSizing: "border-box",
+  width: "auto",
+  position: "absolute",
+  top: 10,
+  left: 10,
 }));
