@@ -4,7 +4,6 @@ const api = axios.create({
   baseURL: `${import.meta.env.VITE_REACT_BACKEND_URL}/api`,
   headers: {
     "Content-Type": "application/json",
-    authorization: `Bearer ${sessionStorage.getItem("token")}`,
   },
 });
 
@@ -13,8 +12,14 @@ const api = axios.create({
  */
 api.interceptors.request.use(
   (request) => {
-    console.log("Starting Request", request);
-    request.headers.authorization = `Bearer ${sessionStorage.getItem("token")}`;
+    const token = sessionStorage.getItem("token");
+
+    if (token) {
+      request.headers.authorization = `Bearer ${token}`;
+    } else {
+      delete request.headers.authorization;
+    }
+
     return request;
   },
   function (error) {

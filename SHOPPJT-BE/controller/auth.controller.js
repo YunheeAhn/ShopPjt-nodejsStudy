@@ -104,6 +104,9 @@ authController.loginWithGoogle = async (req, res) => {
 
     const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
+    console.log("HEROKU GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
+    console.log("HEROKU TOKEN aud:", jwt.decode(idToken)?.aud);
+
     // GOOGLE_CLIENT_ID를 이용한 토큰 해석
     const ticket = await googleClient.verifyIdToken({
       idToken,
