@@ -22,6 +22,7 @@ import { loginWithEmail, loginWithGoogle, clearErrors } from "../../features/use
 const VITE_GOOGLE_CLIENT = import.meta.env.VITE_GOOGLE_CLIENT;
 
 const LoginPage = () => {
+  console.log("VITE_GOOGLE_CLIENT:", VITE_GOOGLE_CLIENT);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
