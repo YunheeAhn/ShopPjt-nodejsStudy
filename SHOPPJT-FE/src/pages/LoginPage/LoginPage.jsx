@@ -45,25 +45,8 @@ const LoginPage = () => {
     dispatch(loginWithEmail({ email, password }));
   };
 
-  // const handleGoogleLogin = async (credentialResponse) => {
-  //   const idToken = credentialResponse.credential;
-
-  //   dispatch(loginWithGoogle(idToken));
-  // };
-
   const handleGoogleLogin = async (credentialResponse) => {
-    const idToken = credentialResponse?.credential;
-
-    console.log("credential exists?", !!idToken);
-    console.log("idToken head:", idToken?.slice?.(0, 20));
-    console.log("idToken parts:", idToken?.split?.(".")?.length); // 정상 JWT면 3
-
-    // aud 확인
-    if (idToken && idToken.split(".").length === 3) {
-      const payload = JSON.parse(atob(idToken.split(".")[1]));
-      console.log("FRONT TOKEN aud:", payload.aud);
-      console.log("FRONT TOKEN iss:", payload.iss);
-    }
+    const idToken = credentialResponse.credential;
 
     dispatch(loginWithGoogle(idToken));
   };

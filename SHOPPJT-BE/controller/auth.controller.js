@@ -95,96 +95,24 @@ authController.checkAdminPermission = async (req, res, next) => {
 };
 
 // 구글로 로그인
-// authController.loginWithGoogle = async (req, res) => {
-//   try {
-//     const { token: idToken } = req.body;
-//     if (!idToken || typeof idToken !== "string") {
-//       return res.status(400).json({ status: "fail", error: "구글 토큰이 없습니다" });
-//     }
-
-//     const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
-
-//     console.log("HEROKU GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-//     console.log("HEROKU TOKEN aud:", jwt.decode(idToken)?.aud);
-
-//     // GOOGLE_CLIENT_ID를 이용한 토큰 해석
-//     const ticket = await googleClient.verifyIdToken({
-//       idToken,
-//       audience: GOOGLE_CLIENT_ID,
-//     });
-
-//     // 해석된 토큰 정보로 유저 정보 확인하기
-//     const payload = ticket.getPayload();
-//     const email = payload?.email;
-//     const name = payload?.name;
-
-//     if (!email) {
-//       return res
-//         .status(400)
-//         .json({ status: "fail", error: "구글 계정 이메일을 확인할 수 없습니다" });
-//     }
-
-//     console.log("구글로그인", email, name);
-
-//     let user = await User.findOne({ email });
-
-//     if (!user) {
-//       // 유저 새로 생성
-//       // 패스워드 랜덤생성
-//       const randomPassWord = "" + Math.floor(Math.random() * 10000);
-//       // 랜덤 생성 된 패스워드 암호화
-//       const salt = await bcrypt.genSalt(10);
-//       const newPassWord = await bcrypt.hash(randomPassWord, salt);
-
-//       user = new User({
-//         name: name || "Google User",
-//         email,
-//         password: newPassWord,
-//         level: "customer",
-//       });
-//       await user.save();
-//     }
-
-//     // JWT 발급 (이메일 로그인과 동일한 토큰)
-//     const token = await user.generateAuthToken();
-
-//     return res.status(200).json({ status: "success", loginUser: user, token });
-//   } catch (error) {
-//     res.status(400).json({ status: "fail", error: error.message });
-//   }
-// };
-
 authController.loginWithGoogle = async (req, res) => {
   try {
     const { token: idToken } = req.body;
-
-    console.log("HEROKU GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-    console.log("REQ token type:", typeof idToken);
-    console.log("REQ token head:", idToken?.slice?.(0, 20));
-    console.log("REQ token parts:", idToken?.split?.(".")?.length);
-
-    const decoded = jwt.decode(idToken);
-    console.log("HEROKU decoded aud:", decoded?.aud);
-    console.log("HEROKU decoded iss:", decoded?.iss);
-
     if (!idToken || typeof idToken !== "string") {
       return res.status(400).json({ status: "fail", error: "구글 토큰이 없습니다" });
     }
 
-    const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
+    const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+    // GOOGLE_CLIENT_ID를 이용한 토큰 해석
     const ticket = await googleClient.verifyIdToken({
       idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: GOOGLE_CLIENT_ID,
     });
 
-    console.log("STEP2 verifyIdToken ok");
-
+    // 해석된 토큰 정보로 유저 정보 확인하기
     const payload = ticket.getPayload();
     const email = payload?.email;
     const name = payload?.name;
-
-    console.log("STEP3 payload", { email, name });
 
     if (!email) {
       return res
@@ -192,13 +120,15 @@ authController.loginWithGoogle = async (req, res) => {
         .json({ status: "fail", error: "구글 계정 이메일을 확인할 수 없습니다" });
     }
 
+    console.log("구글로그인", email, name);
+
     let user = await User.findOne({ email });
-    console.log("STEP4 findOne user exists?", !!user);
 
     if (!user) {
-      console.log("STEP5 creating user...");
-
+      // 유저 새로 생성
+      // 패스워드 랜덤생성
       const randomPassWord = "" + Math.floor(Math.random() * 10000);
+      // 랜덤 생성 된 패스워드 암호화
       const salt = await bcrypt.genSalt(10);
       const newPassWord = await bcrypt.hash(randomPassWord, salt);
 
@@ -208,20 +138,15 @@ authController.loginWithGoogle = async (req, res) => {
         password: newPassWord,
         level: "customer",
       });
-
       await user.save();
-      console.log("STEP6 user saved");
     }
 
+    // JWT 발급 (이메일 로그인과 동일한 토큰)
     const token = await user.generateAuthToken();
-    console.log("STEP7 jwt issued");
 
     return res.status(200).json({ status: "success", loginUser: user, token });
   } catch (error) {
-    console.log("GOOGLE LOGIN ERROR:", error);
-    console.log("GOOGLE LOGIN ERROR message:", error?.message);
-    console.log("GOOGLE LOGIN ERROR stack:", error?.stack);
-    return res.status(400).json({ status: "fail", error: error?.message || "GOOGLE LOGIN FAILED" });
+    res.status(400).json({ status: "fail", error: error.message });
   }
 };
 
