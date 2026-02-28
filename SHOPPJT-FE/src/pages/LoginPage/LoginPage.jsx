@@ -22,7 +22,6 @@ import { loginWithEmail, loginWithGoogle, clearErrors } from "../../features/use
 const VITE_GOOGLE_CLIENT = import.meta.env.VITE_GOOGLE_CLIENT;
 
 const LoginPage = () => {
-  console.log("VITE_GOOGLE_CLIENT:", VITE_GOOGLE_CLIENT);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -47,11 +46,7 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = async (credentialResponse) => {
-    console.log("google credentialResponse:", credentialResponse);
-
     const idToken = credentialResponse.credential;
-    const payload = JSON.parse(atob(idToken.split(".")[1]));
-    console.log("ID TOKEN aud:", payload.aud);
 
     dispatch(loginWithGoogle(idToken));
   };
