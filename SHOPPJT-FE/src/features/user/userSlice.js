@@ -28,7 +28,20 @@ export const loginWithEmail = createAsyncThunk(
 
 export const loginWithGoogle = createAsyncThunk(
   "user/loginWithGoogle",
-  async (token, { rejectWithValue }) => {},
+  async (token, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/auth/google", { token });
+
+      if (response.status !== 200) throw new Error(response.error);
+
+      // 세션스토리지 토큰 저장
+      sessionStorage.setItem("token", response.data.token);
+      return response.data;
+    } catch (error) {
+      const msg = error?.response?.data?.error || error?.message || "로그인에 실패 했습니다";
+      return rejectWithValue(msg);
+    }
+  },
 );
 
 export const logout = () => (dispatch) => {
@@ -142,6 +155,28 @@ const userSlice = createSlice({
       .addCase(loginWithToken.fulfilled, (state, action) => {
         // 토큰 값 있으면 로그인 유지
         state.user = action.payload.user;
+      })
+      //***** 구글 로그인 *****//
+      .addCase(loginWithGoogle.pending, (state) => {
+        // 이메일로 로그인 성공 실패 여부 기다리는 중
+        state.loading = true;
+        state.loginError = null;
+      })
+      .addCase(loginWithGoogle.fulfilled, (state, action) => {
+        // 구글 로그인 성공
+        state.loading = false;
+        // 구글 로그인 유저 값 저장
+        state.user = action.payload.loginUser;
+        state.token = action.payload.token;
+        state.loginError = null;
+
+        // 세션 스토리지 토큰 저장
+        state.token = action.payload.token;
+      })
+      .addCase(loginWithGoogle.rejected, (state, action) => {
+        // 구글 로그인 실패
+        state.loading = false;
+        state.loginError = action.payload;
       });
   },
 });

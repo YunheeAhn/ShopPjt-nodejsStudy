@@ -122,7 +122,7 @@ const Navbar = ({ user }) => {
               <Box
                 component="img"
                 src="/image/hm-logo.png"
-                alt="hm-logo.png"
+                alt="키캡샵"
                 sx={{ width: 92, height: "auto" }}
               />
             </Box>

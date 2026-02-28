@@ -19,7 +19,7 @@ import { styled } from "@mui/material/styles";
 
 import { loginWithEmail, loginWithGoogle, clearErrors } from "../../features/user/userSlice";
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const VITE_GOOGLE_CLIENT = import.meta.env.VITE_GOOGLE_CLIENT;
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -48,6 +48,7 @@ const LoginPage = () => {
   const handleGoogleLogin = async (credentialResponse) => {
     //구글 로그인 하기
     console.log("google credentialResponse:", credentialResponse);
+    dispatch(loginWithGoogle(credentialResponse.credential));
   };
 
   return (
@@ -109,7 +110,7 @@ const LoginPage = () => {
               </ExternalLoginCaption>
 
               <GoogleCenter>
-                <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+                <GoogleOAuthProvider clientId={VITE_GOOGLE_CLIENT}>
                   <GoogleLogin
                     onSuccess={handleGoogleLogin}
                     onError={() => {
