@@ -13,6 +13,11 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 // bcryptjs 모듈 불러오기 (비밀번호 암호화)
 const bcrypt = require("bcryptjs");
 
+// 구글 oauth client
+const { OAuth2Client } = require("google-auth-library");
+// 구글 oauth client key
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+
 const authController = {};
 
 // 이메일로 로그인
@@ -84,6 +89,63 @@ authController.checkAdminPermission = async (req, res, next) => {
     }
 
     next();
+  } catch (error) {
+    res.status(400).json({ status: "fail", error: error.message });
+  }
+};
+
+// 구글로 로그인
+authController.loginWithGoogle = async (req, res) => {
+  try {
+    const { token: idToken } = req.body;
+    if (!idToken || typeof idToken !== "string") {
+      return res.status(400).json({ status: "fail", error: "구글 토큰이 없습니다" });
+    }
+
+    const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+
+    // GOOGLE_CLIENT_ID를 이용한 토큰 해석
+    const ticket = await googleClient.verifyIdToken({
+      idToken,
+      audience: GOOGLE_CLIENT_ID,
+    });
+
+    // 해석된 토큰 정보로 유저 정보 확인하기
+    const payload = ticket.getPayload();
+    const email = payload?.email;
+    const name = payload?.name;
+
+    if (!email) {
+      return res
+        .status(400)
+        .json({ status: "fail", error: "구글 계정 이메일을 확인할 수 없습니다" });
+    }
+
+    console.log("구글로그인", email, name);
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // 유저 새로 생성
+      // 패스워드 랜덤생성
+      const randomPassWord = "" + Math.floor(Math.random() * 10000);
+      // 랜덤 생성 된 패스워드 암호화
+      const salt = await bcrypt.gentSalt(10);
+      const newPassWord = await bcrypt.hash(randomPassWord, salt);
+
+      user = new User({
+        name: name || "Google User",
+        email,
+        password: newPassWord,
+        level: "customer",
+      });
+      await user.save();
+    }
+
+    // JWT 발급 (이메일 로그인과 동일한 토큰)
+    const token = await user.generateAuthToken();
+
+    return res.status(200).json({ status: "success", loginUser: user, token });
   } catch (error) {
     res.status(400).json({ status: "fail", error: error.message });
   }

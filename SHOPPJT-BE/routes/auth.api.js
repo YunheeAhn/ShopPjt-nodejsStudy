@@ -9,5 +9,8 @@ const authController = require("../controller/auth.controller");
 // 계정로그인 endpoint 연결
 router.post("/login", authController.loginWithEmail);
 
+// 구글로그인 endpoint 연결
+router.post("/google", authController.loginWithGoogle);
+
 // 라우터 모듈 내보내기
 module.exports = router;
